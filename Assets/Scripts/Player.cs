@@ -4,10 +4,26 @@ using UnityEngine;
 
 public class Player : MovableObject
 {
-    public int curColorIdx { get; private set; } = 0;
+    public ColorUtils.ColorIdx curColorIdx { get; private set; } = ColorUtils.ColorIdx.RED;
+
+    SpriteRenderer spriteRenderer;
+
+    public void Start()
+    {
+        spriteRenderer = GetComponent<SpriteRenderer>();
+    }
 
     public void ChangeColor()
     {
-        curColorIdx = (curColorIdx + 1) % 3;
+        curColorIdx = ColorUtils.NextColor(curColorIdx);
+
+        spriteRenderer.color = ColorUtils.GetColorByIdx(curColorIdx);
     }
+
+    private void OnTriggerEnter2D(Collider2D collision)
+    {
+        Debug.Log("Collision : " + collision.name);
+    }
+
+
 }

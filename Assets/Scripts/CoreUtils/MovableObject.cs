@@ -4,13 +4,15 @@ using UnityEngine;
 
 public class MovableObject : MonoBehaviour
 {
+    public InGameManager gm;
+
     public float MAX_SPEED = 5f;
     float MIN_MAP_X = -50.0f, MAX_MAP_X = 50.0f;
     float MIN_MAP_Y = -50.0f, MAX_MAP_Y = 50.0f;
 
     [HideInInspector] public bool isMoving;
-    float speed;
-    Vector2 pos;
+    [HideInInspector] public float speed;
+    [HideInInspector] public Vector2 pos;
     Vector2 direction;
 
     public void Move(Vector2 dir, float taget_speed)

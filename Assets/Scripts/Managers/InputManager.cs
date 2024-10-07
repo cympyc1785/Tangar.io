@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class InputManager : MonoBehaviour
 {
-    public GameObject Player;
+    public InGameManager gm;
     public GameObject Joystick;
     [HideInInspector] public bool isMovingKeyDown;
 
@@ -13,7 +13,7 @@ public class InputManager : MonoBehaviour
 
     private void Start()
     {
-        player = Player.GetComponent<Player>();
+        player = gm.Player.GetComponent<Player>();
         // joystick = Joystick.GetComponent<Joystick>();
     }
 
