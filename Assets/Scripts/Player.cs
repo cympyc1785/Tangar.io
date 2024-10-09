@@ -8,8 +8,9 @@ public class Player : MovableObject
 
     SpriteRenderer spriteRenderer;
 
-    public void Start()
+    protected override void Start()
     {
+        base.Start();
         spriteRenderer = GetComponent<SpriteRenderer>();
     }
 
@@ -20,10 +21,13 @@ public class Player : MovableObject
         spriteRenderer.color = ColorUtils.GetColorByIdx(curColorIdx);
     }
 
+    public Camera GetPlayerCamera()
+    {
+        return GetComponentInChildren<Camera>();
+    }
+
     private void OnTriggerEnter2D(Collider2D collision)
     {
         Debug.Log("Collision : " + collision.name);
     }
-
-
 }

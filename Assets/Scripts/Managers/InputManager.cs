@@ -13,13 +13,22 @@ public class InputManager : MonoBehaviour
 
     private void Start()
     {
-        player = gm.Player.GetComponent<Player>();
+        gm.serverManager.AddOnJoinHandler(ConnectPlayer);
         // joystick = Joystick.GetComponent<Joystick>();
+    }
+
+    void ConnectPlayer()
+    {
+        player = gm.Player.GetComponent<Player>();
+        if (player == null)
+        {
+            Debug.LogError("Player is missing!");
+        }
     }
 
     void Update()
     {
-        Vector2 dir = new Vector2(0.0f, 0.0f);
+        Vector2 dir = Vector2.zero;
         isMovingKeyDown = false;
 
         // get joystick input

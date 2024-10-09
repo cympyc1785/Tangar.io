@@ -1,45 +1,78 @@
+using Photon.Pun;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class MovableObject : MonoBehaviour
+interface IMovable
 {
-    public InGameManager gm;
+    public void Move(Vector2 dir, float target_speed);
+    public void Stop();
+}
 
-    public float MAX_SPEED = 5f;
-    float MIN_MAP_X = -50.0f, MAX_MAP_X = 50.0f;
-    float MIN_MAP_Y = -50.0f, MAX_MAP_Y = 50.0f;
+public abstract class MovableObject : MonoBehaviour, IMovable
+{
+    private InGameManager gm;
+
+    public MovementSettings movementSettings;
 
     [HideInInspector] public bool isMoving;
     [HideInInspector] public float speed;
     [HideInInspector] public Vector2 pos;
     Vector2 direction;
 
-    public void Move(Vector2 dir, float taget_speed)
+    PhotonView photonView;
+
+    protected virtual void Start()
     {
-        if (dir == null) return;
+        gm = GameObject.FindObjectOfType<InGameManager>();
+        if (gm == null)
+        {
+            Debug.LogError("GM is missing!");
+        }
+
+        photonView = GetComponent<PhotonView>();
+        if (photonView == null)
+        {
+            Debug.LogError("PhotonView component is missing!");
+        }
+    }
+
+    public virtual void Move(Vector2 dir, float target_speed)
+    {
+        if (dir == Vector2.zero)
+        {
+            Stop();
+            return;
+        }
+
         direction = dir;
-        speed = taget_speed;
+        speed = Mathf.Clamp(target_speed, 0, movementSettings.MAX_SPEED);
         isMoving = true;
     }
 
-    public void Stop()
+    public virtual void Stop()
     {
-        isMoving = false;
         speed = 0;
-        direction = new Vector2(0, 0);
+        direction = Vector2.zero;
+        isMoving = false;
     }
 
-    private void Update()
+    protected virtual void Update()
     {
+        // Ensure Control Authority
+        if (!photonView.IsMine) return;
+        if (direction == Vector2.zero) return;
+
         pos = transform.position;
 
         // stop for boundary
-        if ((pos.x <= MIN_MAP_X && direction.x < 0.0f) || (pos.x >= MAX_MAP_X && direction.x > 0.0f))
+        if ((pos.x <= movementSettings.MIN_MAP_X && direction.x < 0.0f)
+            || (pos.x >= movementSettings.MAX_MAP_X && direction.x > 0.0f))
         {
             direction.x = 0.0f;
         }
-        if ((pos.y <= MIN_MAP_Y && direction.y < 0.0f) || (pos.y >= MAX_MAP_Y && direction.y > 0.0f))
+        if ((pos.y <= movementSettings.MIN_MAP_Y && direction.y < 0.0f)
+            || (pos.y >= movementSettings.MAX_MAP_Y && direction.y > 0.0f))
         {
             direction.y = 0.0f;
         }
